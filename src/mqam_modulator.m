@@ -17,4 +17,6 @@ function [symbols, padLen] = mqam_modulator(bits, M)
         'InputType', 'bit', ...
         'UnitAveragePower', true); % Нормализация мощности символов
 
+    % Возвращаем строкой
+    symbols = symbols.';  
 end 

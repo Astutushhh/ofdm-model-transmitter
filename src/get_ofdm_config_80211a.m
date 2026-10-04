@@ -27,5 +27,15 @@ function cfg = get_ofdm_config_80211a()
     cfg.dataPositions = find(subcarrierMap == 2);
     cfg.pilotPositions = find(subcarrierMap == 1);
     cfg.numDataPerSymbol = numel(cfg.dataPositions);
-    cfg.pilotValues = ones(numel(cfg.pilotPositions), 1); % упрощённые значения, закидываем 1
+    
+    % любой ненулевой 7-битный вектор, главное - одинаковый на TX и RX
+    cfg.scramblerSeed = ones(7, 1);
+
+    % Базовый паттерн пилотов по стандарту (для позиций -21, -7, 7, 21)
+    cfg.pilotBasePattern = [1; 1; 1; -1];
+
+    % Последовательность полярности пилотов (127 значений, 802.11a),
+    % тот же LFSR x^7+x^4+1, засеянный единицами, что в wlanScramble
+    pilotPolarityBits = wlanScramble(zeros(127,1), cfg.scramblerSeed);
+    cfg.pilotPolaritySeq = 1 - 2*pilotPolarityBits;   % 0->+1, 1->-1, 127x1
 end
